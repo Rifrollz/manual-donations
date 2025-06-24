@@ -1,18 +1,20 @@
-<?php 
+<?php
 /**
  * Plugin Name: Manual Donations form for GCF
  * Description: Adds a manual donation page with offline payment instructions and confirmation form.
- * Version: 2
+ * Version: 2.1
  * Author: Rollins
  * Plugin URI: https://github.com/Rifrollz/manual-donations
  */
 
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly.
+  exit; // Exit if accessed directly.
 }
 
-add_shortcode('manual_donation_form', 'mdonation_render_form');
+require_once plugin_dir_path(__FILE__) . 'includes/github-updater.php';
+new MD_GitHub_Updater(__FILE__);
 
+add_shortcode('manual_donation_form', 'mdonation_render_form');
 function mdonation_render_form() {
     if (isset($_GET['donation_confirmed']) && $_GET['donation_confirmed'] === '1') {
         ob_start();
@@ -50,6 +52,16 @@ function mdonation_render_form() {
 <?php
         return ob_get_clean();
     }
+
+    $options = get_option('mdonation_options', []);
+    $md_mtn = !empty($options['md_mtn']) ? esc_html($options['md_mtn']) : '0770 XXX XXX';
+    $md_airtel = !empty($options['md_airtel']) ? esc_html($options['md_airtel']) : '0750 XXX XXX';
+    $md_recipient = !empty($options['md_recipient']) ? esc_html($options['md_recipient']) : 'Hearts United Foundation';
+    $md_bank_name = !empty($options['md_bank_name']) ? esc_html($options['md_bank_name']) : 'Centenary Bank';
+    $md_account_name = !empty($options['md_account_name']) ? esc_html($options['md_account_name']) : 'Kaliba Nathan';
+    $md_account_number = !empty($options['md_account_number']) ? esc_html($options['md_account_number']) : '123456789';
+    $md_swift_code = !empty($options['md_swift_code']) ? esc_html($options['md_swift_code']) : 'XYZBUGKA';
+    $md_additional_info = !empty($options['md_additional_info']) ? wp_kses_post($options['md_additional_info']) : 'After sending your donation, please fill the confirmation form below so we can verify and acknowledge your support.';
 
     ob_start();
 ?>
@@ -164,20 +176,20 @@ function mdonation_render_form() {
 
         <h3>📱 Mobile Money</h3>
         <ul>
-            <li><strong>MTN:</strong> 0770 XXX XXX</li>
-            <li><strong>Airtel:</strong> 0750 XXX XXX</li>
-            <li><strong>Recipient Name:</strong> Hearts United Foundation</li>
+            <li><strong>MTN:</strong> <?php echo $md_mtn; ?></li>
+            <li><strong>Airtel:</strong> <?php echo $md_airtel; ?></li>
+            <li><strong>Recipient Name:</strong> <?php echo $md_recipient; ?></li>
         </ul>
 
         <h3>🏦 Bank Transfer</h3>
         <ul>
-            <li><strong>Bank Name:</strong> XYZ Bank Uganda</li>
-            <li><strong>Account Name:</strong> Hearts United Foundation</li>
-            <li><strong>Account Number:</strong> 123456789</li>
-            <li><strong>SWIFT Code:</strong> XYZBUGKA</li>
+            <li><strong>Bank Name:</strong> <?php echo $md_bank_name; ?></li>
+            <li><strong>Account Name:</strong> <?php echo $md_account_name; ?></li>
+            <li><strong>Account Number:</strong> <?php echo $md_account_number; ?></li>
+            <li><strong>SWIFT Code:</strong> <?php echo $md_swift_code; ?></li>
         </ul>
 
-        <p class="md-info-text"><em>After sending your donation, please fill the confirmation form below so we can verify and acknowledge your support.</em></p>
+        <p class="md-info-text"><em><?php echo $md_additional_info; ?></em></p>
 
         <hr>
 
@@ -293,5 +305,6 @@ add_action('widgets_init', function () {
     register_widget('Manual_Donation_Widget');
 });
 
+require_once plugin_dir_path(__FILE__) . 'includes/admin-settings.php';
 require_once plugin_dir_path(__FILE__) . 'includes/github-updater.php';
 new MD_GitHub_Updater(__FILE__);
