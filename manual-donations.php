@@ -1,9 +1,10 @@
-<?php
+<?php 
 /**
  * Plugin Name: Manual Donations form for GCF
  * Description: Adds a manual donation page with offline payment instructions and confirmation form.
- * Version: 1.2
+ * Version: 2
  * Author: Rollins
+ * Plugin URI: https://github.com/Rifrollz/manual-donations
  */
 
 if (!defined('ABSPATH')) {
@@ -291,3 +292,6 @@ class Manual_Donation_Widget extends WP_Widget
 add_action('widgets_init', function () {
     register_widget('Manual_Donation_Widget');
 });
+
+require_once plugin_dir_path(__FILE__) . 'includes/github-updater.php';
+new MD_GitHub_Updater(__FILE__);
